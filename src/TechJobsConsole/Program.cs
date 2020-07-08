@@ -40,8 +40,8 @@ namespace TechJobsConsole
                     }
                     else
                     {
-                        List<string> results = JobData.FindAll(columnChoice);
-
+                        List<string> results = JobData.FindAll(columnChoice);    //optionChoice  
+                        //results.Sort();    //Regarding sorting:
                         Console.WriteLine("\n*** All " + columnChoices[columnChoice] + " Values ***");
                         foreach (string item in results)
                         {
@@ -63,11 +63,15 @@ namespace TechJobsConsole
                     // Fetch results
                     if (columnChoice.Equals("all"))
                     {
-                        Console.WriteLine("Search all fields not yet implemented.");
+                        //Console.WriteLine("Search all fields not yet implemented.");  /*work needs to be done*/
+
+                        searchResults = JobData.FindByValue(searchTerm);    //FindByValue(string searchValue)
+                        PrintJobs(searchResults);
                     }
-                    else
+                    else 
                     {
                         searchResults = JobData.FindByColumnAndValue(columnChoice, searchTerm);
+                        
                         PrintJobs(searchResults);
                     }
                 }
@@ -84,7 +88,7 @@ namespace TechJobsConsole
             string[] choiceKeys = new string[choices.Count];
 
             int i = 0;
-            foreach (KeyValuePair<string, string> choice in choices)
+            foreach (KeyValuePair<string, string> choice in choices) 
             {
                 choiceKeys[i] = choice.Key;
                 i++;
@@ -118,7 +122,38 @@ namespace TechJobsConsole
 
         private static void PrintJobs(List<Dictionary<string, string>> someJobs)
         {
-            Console.WriteLine("PrintJobs is not implemented yet");
+            /*
+            *****
+            name: Sr.IT Analyst(Data/ BI)
+            employer: Bull Moose Industries
+            location: Saint Louis
+            position type: Data Scientist / Business Intelligence
+            core competency: Statistical Analysis
+            *****
+            */
+            foreach (Dictionary<string, string> someJob in someJobs) 
+            {
+                Console.WriteLine("*****");
+                // nested loop to iterate over each dictionary key
+                foreach (KeyValuePair<string, string> kvp in someJob)
+                {
+                    Console.WriteLine(kvp.Key + ": " + kvp.Value);  //employer,location,position type, core competency
+                }
+                //Console.WriteLine("name: " + someJob["name"]); 
+                //Console.WriteLine("employer: " + someJob["employer"]);
+                //Console.WriteLine("location: " + someJob["location"]);
+                //Console.WriteLine("position type: " + someJob["position type"]);
+                //Console.WriteLine("core competency: " + someJob["core competency"]);
+                //Console.WriteLine("*****");
+
+            }
+            
+            if (someJobs.Count == 0)
+            {
+                Console.WriteLine("no results");
+            }
+
+            //Console.WriteLine("PrintJobs is not implemented yet");
         }
     }
 }
