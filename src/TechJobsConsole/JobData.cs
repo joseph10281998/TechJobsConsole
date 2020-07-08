@@ -8,7 +8,26 @@ namespace TechJobsConsole
     class JobData
     {
         static List<Dictionary<string, string>> AllJobs = new List<Dictionary<string, string>>();
-        static bool IsDataLoaded = false;
+        static bool IsDataLoaded = false;   //conventional design pattern "that is related to data loading" 
+
+        /* Each line in the CSV file is a Dictionary item in the List,
+         * and each of these keys provide a way to lookup the Dictionary elements:
+        name,employer,location,position type, core competency
+        ... so, given the first line of data,..
+         Junior Data Analyst, Lockerdome, Saint Louis,Data Scientist / Business Intelligence, Statistical Analysis
+        ... d["name"] would return "Junior Data Analyst"
+        */
+        /* example: List<string> box = new List<string>()
+         *            box.Add("book");
+         *            box.Add("pen");
+         *           if (box.Contains("pen") {
+         *           do something with it
+         *          List = {book, pen,....}
+         * In this case, we have:  
+         *   List All Jobs = {dictionary1,= { name; "Junior Data Analyst", "employer": "Lockerdome", ...}
+         *                    dictionary2,= (emplyer
+         *                    dictionary3
+         *                    ....} - It is like overall, we have 98*5 matrix*/
 
         public static List<Dictionary<string, string>> FindAll()
         {
@@ -18,17 +37,19 @@ namespace TechJobsConsole
 
         /*
          * Returns a list of all values contained in a given column,
-         * without duplicates. 
+         * without duplicates. E.g. passing "location" will return a
+         * list of distint job locations.
          */
         public static List<string> FindAll(string column)
         {
+            column = column.ToLower();    //case-insensitive
             LoadData();
 
             List<string> values = new List<string>();
 
             foreach (Dictionary<string, string> job in AllJobs)
             {
-                string aValue = job[column];
+                string aValue = job[column].ToLower();        //case-insensitive
 
                 if (!values.Contains(aValue))
                 {
@@ -40,6 +61,8 @@ namespace TechJobsConsole
 
         public static List<Dictionary<string, string>> FindByColumnAndValue(string column, string value)
         {
+            column = column.ToLower();         //case-insensitive
+            value = value.ToLower();           //case-insensitive
             // load data, if not already loaded
             LoadData();
 
@@ -47,7 +70,7 @@ namespace TechJobsConsole
 
             foreach (Dictionary<string, string> row in AllJobs)
             {
-                string aValue = row[column];
+                string aValue = row[column].ToLower();       //case-insensitive
 
                 if (aValue.Contains(value))
                 {
@@ -57,6 +80,34 @@ namespace TechJobsConsole
 
             return jobs;
         }
+
+
+        public static List<Dictionary<string, string>> FindByValue(string searchValue)
+        {
+            searchValue = searchValue.ToLower();       //case-insensitive
+            LoadData();
+
+            List<Dictionary<string, string>> jobs = new List<Dictionary<string, string>>();
+
+            foreach (Dictionary<string, string> row in AllJobs)
+            {
+                foreach (KeyValuePair<string, string> kvp in row)
+                {
+                    string aValue = kvp.Value.ToLower();  //case-insensitive
+
+                    if (aValue.Contains(searchValue))
+                    {
+                        jobs.Add(row);
+                        break;         //To avoid dupulication of same keywords
+                    }
+                }
+            }
+
+            return jobs;
+        }
+
+
+
 
         /*
          * Load and parse data from job_data.csv
@@ -70,7 +121,6 @@ namespace TechJobsConsole
             }
 
             List<string[]> rows = new List<string[]>();
-
             using (StreamReader reader = File.OpenText("job_data.csv"))
             {
                 while (reader.Peek() >= 0)
